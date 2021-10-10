@@ -3,7 +3,6 @@ import { createTheme, duration, easing } from '@mui/material/styles'
 import { shape } from '@mui/system'
 
 const palette = {
-    primary: {},
     text: {
         primary: 'rgba(0,0,0,.87)',
     },

@@ -3,23 +3,13 @@ import { ServerStyleSheets } from '@mui/styles'
 import createEmotionServer from '@emotion/server/create-instance'
 import Document, { Html, Head, Main, NextScript } from 'next/document'
 
-import theme from 'theme'
 import createEmotionCache from 'utils/createEmotionCache'
 
 class MyDocument extends Document {
     render() {
         return (
             <Html lang='en'>
-                <Head>
-                    {/* PWA primary color */}
-                    <meta name='theme-color' content={theme().palette.primary.main} />
-                    <meta name='robots' content='follow, index' />
-                    <link rel='shortcut icon' href='/favicon.ico' />
-                    <link
-                        rel='stylesheet'
-                        href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap'
-                    />
-                </Head>
+                <Head />
                 <body>
                     <Main />
                     <NextScript />

@@ -5,7 +5,7 @@ config.autoAddCss = false // Tell Font Awesome to skip adding the CSS automatica
 import { CacheProvider, EmotionCache } from '@emotion/react'
 import { CssBaseline } from '@mui/material'
 import { ThemeProvider } from '@mui/material/styles'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import Head from 'next/head'
 import type { AppProps } from 'next/app'
 import type { NextPage } from 'next'
@@ -25,6 +25,7 @@ type AppPropsWithLayout = AppProps & {
 function MyApp({ Component, pageProps, emotionCache = clientSideEmotionCache }: AppPropsWithLayout) {
     const getLayout = Component.getLayout || ((page) => page)
     const [themeMode] = useLocalStorage<'light' | 'dark'>('theme-mode', 'light')
+    const th = useMemo(() => theme(themeMode), [themeMode])
 
     useEffect(() => {
         // Remove the server-side injected CSS.
@@ -37,9 +38,17 @@ function MyApp({ Component, pageProps, emotionCache = clientSideEmotionCache }: 
     return (
         <CacheProvider value={emotionCache}>
             <Head>
-                <meta name='viewport' content='minimum-scale=1, initial-scale=1, width=device-width' />
+                <meta name='viewport' content='initial-scale=1, width=device-width' />
+                {/* PWA primary color */}
+                <meta name='theme-color' content={th.palette.primary.main} />
+                <meta name='robots' content='follow, index' />
+                <link rel='shortcut icon' href='/favicon.ico' />
+                <link
+                    rel='stylesheet'
+                    href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap'
+                />
             </Head>
-            <ThemeProvider theme={theme(themeMode)}>
+            <ThemeProvider theme={th}>
                 {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
                 <CssBaseline />
                 {getLayout(<Component {...pageProps} />)}
