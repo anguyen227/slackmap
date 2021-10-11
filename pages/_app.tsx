@@ -43,10 +43,6 @@ function MyApp({ Component, pageProps, emotionCache = clientSideEmotionCache }: 
                 <meta name='theme-color' content={th.palette.primary.main} />
                 <meta name='robots' content='follow, index' />
                 <link rel='shortcut icon' href='/favicon.ico' />
-                <link
-                    rel='stylesheet'
-                    href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap'
-                />
             </Head>
             <ThemeProvider theme={th}>
                 {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
