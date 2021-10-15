@@ -12,6 +12,9 @@
 /.next/
 /out/
 
+# credential
+*.json
+
 # production
 /build
 
