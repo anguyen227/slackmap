@@ -42,8 +42,7 @@ class Member {
 
     const userRecord = await auth.createUser({
       email: memberData.email,
-      //   by pass due to creating by slack email
-      emailVerified: true,
+      emailVerified: false,
       password,
     });
     return await this._col(teamId)

@@ -48,17 +48,13 @@ app.post("/add", async (req, res, next) => {
             avatar_url: image_1024,
             display_name,
           });
-          res
-            .status(200)
-            .send(
-              `You've successfully added to Slack Map.
+          res.status(200).send(
+            `You've successfully added to Slack Map.
               You can log in with credential: [YOUR SLACK EMAIL]/${password}`
-            );
+          );
         } else {
           throw new ClientError(400, "invalid/slack-email");
         }
-
-        console.log("slackResult", slackResult);
       }
     } else {
       throw new ClientError(400, "invalid/user-data");
