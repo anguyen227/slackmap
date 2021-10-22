@@ -5,14 +5,20 @@ config.autoAddCss = false // Tell Font Awesome to skip adding the CSS automatica
 import { CacheProvider, EmotionCache } from '@emotion/react'
 import { CssBaseline } from '@mui/material'
 import { ThemeProvider } from '@mui/material/styles'
-import { useEffect, useMemo } from 'react'
+import { useLocalStorage } from 'react-hooks'
 import Head from 'next/head'
+import React, { useEffect, useMemo } from 'react'
 import type { AppProps } from 'next/app'
 import type { NextPage } from 'next'
+import FirebaseApp from 'FirebaseApp'
 
 import theme from 'theme'
 import createEmotionCache from 'utils/createEmotionCache'
-import { useLocalStorage } from 'react-hooks'
+import { AuthProvider } from 'services/auth/AuthProvider'
+
+import AuthGuard from 'services/auth/AuthGuard'
+
+FirebaseApp.init()
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache()
@@ -26,7 +32,6 @@ function MyApp({ Component, pageProps, emotionCache = clientSideEmotionCache }: 
     const getLayout = Component.getLayout || ((page) => page)
     const [themeMode] = useLocalStorage<'light' | 'dark'>('theme-mode', 'light')
     const th = useMemo(() => theme(themeMode), [themeMode])
-
     useEffect(() => {
         // Remove the server-side injected CSS.
         const jssStyles = document.querySelector('#jss-server-side')
@@ -47,7 +52,11 @@ function MyApp({ Component, pageProps, emotionCache = clientSideEmotionCache }: 
             <ThemeProvider theme={th}>
                 {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
                 <CssBaseline />
-                {getLayout(<Component {...pageProps} />)}
+                <AuthProvider>
+                    <AuthGuard protectPage={pageProps?.protectPage}>
+                        {getLayout(<Component {...pageProps} />)}
+                    </AuthGuard>
+                </AuthProvider>
             </ThemeProvider>
         </CacheProvider>
     )

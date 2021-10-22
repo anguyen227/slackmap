@@ -1,11 +1,21 @@
 import admin from "firebase-admin";
 
-const defaultApp = admin.initializeApp({
-  credential: admin.credential.applicationDefault(),
-  databaseURL: "https://slackmap-commit.firebaseio.com",
-});
+class Firebase {
+  static app: admin.app.App;
+  static db: admin.firestore.Firestore;
+  static auth: admin.auth.Auth;
 
-export default defaultApp;
+  static init() {
+    if (!admin.apps.length) {
+      try {
+        this.app = admin.initializeApp();
+        this.db = this.app.firestore();
+        this.auth = this.app.auth();
+      } catch (e) {
+        console.log("Firebase admin initialization error", e);
+      }
+    }
+  }
+}
 
-export const firestore = defaultApp.firestore();
-export const auth = defaultApp.auth();
+export default Firebase;

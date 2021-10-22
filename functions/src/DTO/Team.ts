@@ -1,25 +1,19 @@
-import { firestore } from "../firebase";
+import Firebase from "../firebase";
 import System, { SystemDTO } from "./System";
 import Collection from "../enum/Collection";
-import ClientError from "./ClientError";
 
-export interface TeamDTO extends Partial<SystemDTO> {
-  team_id: string;
-  team_domain: string;
+export interface TeamDTO extends SystemDTO {
+  teamDomain: string;
 }
 
-class Team {
-  _col = firestore.collection(Collection.Team);
+class Team extends System<TeamDTO> {
+  _col = () =>
+    Firebase.db.collection(
+      Collection.Team
+    ) as FirebaseFirestore.CollectionReference<TeamDTO>;
 
-  isExist = async (id: string, teamData?: TeamDTO) => {
-    const team = await this._col.doc(id).get();
-    if (team.exists) {
-      return team;
-    } else if (teamData) {
-      return await this._col.doc(id).set(System.convertIn(teamData));
-    }
-    return Promise.reject(new ClientError(400, "team/do-not-exist"));
-  };
+  _doc = (id: string) =>
+    this._col().doc(id) as FirebaseFirestore.DocumentReference<TeamDTO>;
 }
 
 export default new Team();

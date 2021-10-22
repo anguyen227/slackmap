@@ -6,7 +6,7 @@ export const errorResponder: ErrorRequestHandler = (error, _req, res) => {
     res.status(500).send(JSON.stringify(error, null, 4));
   } else {
     if (error.code === ErrorCode.PlatformError) {
-      console.log(error.data);
+      console.error(error.data);
     }
     res.status(500).send(JSON.stringify(error, null, 4));
   }

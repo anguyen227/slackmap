@@ -1,54 +1,29 @@
-import { firestore, auth } from "../firebase";
+import Firebase from "../firebase";
 import System, { SystemDTO } from "./System";
 import Collection from "../enum/Collection";
-import ClientError from "./ClientError";
 
-export interface MemberDTO extends Partial<SystemDTO> {
+export interface MemberDTO extends SystemDTO {
   email: string;
-  user_id: string;
-  avatar_url?: string;
-  display_name?: string;
+  userId: string;
+  avatarUrl?: string;
+  displayName?: string;
   uid?: string;
   geohash?: string;
   lat?: number;
   lng?: number;
 }
 
-class Member {
+class Member extends System<MemberDTO> {
   _col = (teamId: string) =>
-    firestore
+    Firebase.db
       .collection(Collection.Team)
       .doc(teamId)
-      .collection(Collection.Member);
+      .collection(
+        Collection.Member
+      ) as FirebaseFirestore.CollectionReference<MemberDTO>;
 
-  isExist = async (teamId: string, id: string) => {
-    const member = await this._col(teamId).doc(id).get();
-    if (member.exists) {
-      return true;
-    }
-    return false;
-  };
-
-  create = async (
-    teamId: string,
-    id: string,
-    password: string,
-    memberData: MemberDTO
-  ) => {
-    const existed = await this.isExist(teamId, id);
-    if (existed) {
-      throw new ClientError(500, "user/existed");
-    }
-
-    const userRecord = await auth.createUser({
-      email: memberData.email,
-      emailVerified: false,
-      password,
-    });
-    return await this._col(teamId)
-      .doc(id)
-      .set(System.convertIn({ ...memberData, uid: userRecord.uid }));
-  };
+  _doc = (teamId: string, id: string) =>
+    this._col(teamId).doc(id) as FirebaseFirestore.DocumentReference<MemberDTO>;
 }
 
 export default new Member();
