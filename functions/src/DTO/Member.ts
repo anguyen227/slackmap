@@ -22,8 +22,11 @@ class Member extends System<MemberDTO> {
         Collection.Member
       ) as FirebaseFirestore.CollectionReference<MemberDTO>;
 
-  _doc = (teamId: string, id: string) =>
-    this._col(teamId).doc(id) as FirebaseFirestore.DocumentReference<MemberDTO>;
+  _doc(teamId: string, id: string) {
+    return this._col(teamId).doc(
+      id
+    ) as FirebaseFirestore.DocumentReference<MemberDTO>;
+  }
 }
 
 export default new Member();

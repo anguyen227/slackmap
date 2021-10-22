@@ -13,8 +13,9 @@ class User extends System<UserDTO> {
       Collection.User
     ) as FirebaseFirestore.CollectionReference<UserDTO>;
 
-  _doc = (id: string) =>
-    this._col().doc(id) as FirebaseFirestore.DocumentReference<UserDTO>;
+  _doc(id: string) {
+    return this._col().doc(id) as FirebaseFirestore.DocumentReference<UserDTO>;
+  }
 
   createAccount = async (email: string, password: string) => {
     return await Firebase.auth.createUser({

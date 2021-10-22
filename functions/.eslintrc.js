@@ -30,6 +30,7 @@ module.exports = {
     indent: ["warn", 2],
     camelcase: [0, { properties: "never", ignoreDestructuring: true }],
     "@typescript-eslint/explicit-module-boundary-types": 0,
+    "@typescript-eslint/no-explicit-any": "off",
     "require-jsdoc": [
       2,
       {

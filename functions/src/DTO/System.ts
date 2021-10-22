@@ -5,15 +5,17 @@ export interface SystemDTO {
   updated_at?: Date | string | number;
 }
 
-export default abstract class System<D extends SystemDTO = {}> {
-  _create<R extends SystemDTO = {}>(data: any): R {
+export default abstract class System<
+  D extends SystemDTO = Record<string, unknown>
+> {
+  _create<R extends SystemDTO = Record<string, unknown>>(data: any): R {
     return {
       ...data,
       created_at: new Date(),
     };
   }
-  
-  _update<R extends SystemDTO = {}>(data: any): R {
+
+  _update<R extends SystemDTO = Record<string, unknown>>(data: any): R {
     return {
       ...data,
       updated_at: new Date(),

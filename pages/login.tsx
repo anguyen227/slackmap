@@ -1,25 +1,23 @@
-import { browserLocalPersistence, browserSessionPersistence, signInWithEmailAndPassword } from 'firebase/auth'
+import { browserLocalPersistence, browserSessionPersistence } from 'firebase/auth'
 import { Button, Checkbox, FormControlLabel, Typography } from '@mui/material'
 import { css } from '@emotion/css'
 import { getCookie } from 'cookies-next'
+import { useState } from 'react'
 import * as Yup from 'yup'
-import React, { useState } from 'react'
 
-import Firebase from 'FirebaseApp'
-import AppContainer from 'components/AppContainer'
-import Form from 'components/Form'
 
 import Cookie from 'enum/Cookie'
-import handleAuthPersistence from 'services/auth/handleAuthPersistence'
 import useAuth from 'services/auth/useAuth'
 
-import TextInput, { TextInputP } from 'components/Input/TextInput'
+import AppContainer from 'components/AppContainer'
+import Form from 'components/Form'
 import Input from 'components/Form/Input'
+import TextInput, { TextInputP } from 'components/Input/TextInput'
 
 const LoginPage = () => {
-    const { login, isAuthenticated, currentUser, isLoading, changePersistence } = useAuth()
+    const { login, changePersistence } = useAuth()
     const [rememberMe, setRememberMe] = useState(browserLocalPersistence.type === getCookie(Cookie.AuthPersistence))
-    
+
     return (
         <AppContainer title='Sign in to Slack Map'>
             <div

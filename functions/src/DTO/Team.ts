@@ -12,8 +12,9 @@ class Team extends System<TeamDTO> {
       Collection.Team
     ) as FirebaseFirestore.CollectionReference<TeamDTO>;
 
-  _doc = (id: string) =>
-    this._col().doc(id) as FirebaseFirestore.DocumentReference<TeamDTO>;
+  _doc(id: string) {
+    return this._col().doc(id) as FirebaseFirestore.DocumentReference<TeamDTO>;
+  }
 }
 
 export default new Team();
