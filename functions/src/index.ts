@@ -5,12 +5,15 @@ import Admin from "./Admin";
 
 import { errorResponder } from "./middleware/errorHandler";
 import { verifySlack } from "./middleware/verifySlack";
+import verifyAdmin from "./middleware/verifyAdmin";
 
 import register from "./controller/register";
 
 Admin.init();
 
 const app = express();
+
+app.use(verifyAdmin);
 
 app.use(verifySlack);
 

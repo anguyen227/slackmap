@@ -1,5 +1,4 @@
 import admin from "firebase-admin";
-import { WebClient } from "@slack/web-api";
 import { App } from "@slack/bolt";
 import * as functions from "firebase-functions";
 
@@ -8,8 +7,15 @@ class Admin {
   static db: admin.firestore.Firestore;
   static auth: admin.auth.Auth;
   static bolt: App;
+  static initialized: boolean = false;
 
   static init() {
+    this.initialized = true;
+    this.bolt = new App({
+      token: functions.config().slack.bot_token,
+      signingSecret: functions.config().slack.signing_secret,
+    });
+
     if (!admin.apps.length) {
       try {
         this.app = admin.initializeApp();
@@ -17,14 +23,9 @@ class Admin {
         this.auth = this.app.auth();
       } catch (e) {
         console.log("Firebase admin initialization error", e);
+        this.initialized = false;
       }
     }
-
-    // this.web = new WebClient(functions.config().slack.token);
-    this.bolt = new App({
-      token: functions.config().slack.bot_token,
-      signingSecret: functions.config().slack.signing_secret,
-    });
   }
 }
 
