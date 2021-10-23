@@ -1,4 +1,4 @@
-import Firebase from "../firebase";
+import Admin from "../Admin";
 import System, { SystemDTO } from "./System";
 import Collection from "../enum/Collection";
 
@@ -11,11 +11,12 @@ export interface MemberDTO extends SystemDTO {
   geohash?: string;
   lat?: number;
   lng?: number;
+  isAdmin?: boolean;
 }
 
 class Member extends System<MemberDTO> {
   _col = (teamId: string) =>
-    Firebase.db
+    Admin.db
       .collection(Collection.Team)
       .doc(teamId)
       .collection(

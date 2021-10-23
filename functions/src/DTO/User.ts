@@ -1,5 +1,5 @@
 import Collection from "../enum/Collection";
-import Firebase from "../firebase";
+import Admin from "../Admin";
 import System, { SystemDTO } from "./System";
 
 export interface UserDTO extends SystemDTO {
@@ -9,7 +9,7 @@ export interface UserDTO extends SystemDTO {
 
 class User extends System<UserDTO> {
   _col = () =>
-    Firebase.db.collection(
+  Admin.db.collection(
       Collection.User
     ) as FirebaseFirestore.CollectionReference<UserDTO>;
 
@@ -18,7 +18,7 @@ class User extends System<UserDTO> {
   }
 
   createAccount = async (email: string, password: string) => {
-    return await Firebase.auth.createUser({
+    return await Admin.auth.createUser({
       email,
       emailVerified: false,
       password,
@@ -27,7 +27,7 @@ class User extends System<UserDTO> {
 
   getByPath = async (team: string, member: string) => {
     try {
-      const doc = await Firebase.db
+      const doc = await Admin.db
         .doc(`${Collection.Team}/${team}/${Collection.Member}/${member}`)
         .get();
       if (doc.exists) {

@@ -1,4 +1,4 @@
-import Firebase from "../firebase";
+import Admin from "../Admin";
 import System, { SystemDTO } from "./System";
 import Collection from "../enum/Collection";
 
@@ -8,7 +8,7 @@ export interface TeamDTO extends SystemDTO {
 
 class Team extends System<TeamDTO> {
   _col = () =>
-    Firebase.db.collection(
+    Admin.db.collection(
       Collection.Team
     ) as FirebaseFirestore.CollectionReference<TeamDTO>;
 
