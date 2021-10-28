@@ -2,17 +2,17 @@ import type { NextPage } from 'next'
 import dynamic from 'next/dynamic'
 
 import AppContainer from 'components/AppContainer'
-import verifyAuth from 'services/auth/verifyAuth'
 
-const Map = dynamic(() => import('components/Map'), {
-    loading: () => <>{'Loading...'}</>,
-    ssr: false,
-})
+// const Map = dynamic(() => import('components/Map'), {
+//     loading: () => <>{'Loading...'}</>,
+//     ssr: false,
+// })
 
 const Home: NextPage = () => {
     return (
         <AppContainer title='Slack Map'>
-            <Map />
+            home page
+            {/* <Map /> */}
         </AppContainer>
     )
 }
@@ -20,14 +20,13 @@ const Home: NextPage = () => {
 export default Home
 
 export const getServerSideProps = async (ctx: any) => {
-    try {
-        await verifyAuth(ctx)
-        return {
-            props: {
-                protectPage: true,
-            },
-        }
-    } catch {
-        return {}
+    return {
+        props: {} as never,
     }
 }
+
+// export const getStaticProps = async (ctx: any) => {
+//     return {
+//         props: {} as never,
+//     }
+// }

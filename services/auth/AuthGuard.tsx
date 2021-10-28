@@ -9,32 +9,45 @@ type AuthGuardP = {
     children: React.ReactNode
     /* flag the page require to authenticate to display or not */
     protectPage?: boolean
-    /* flag the page will not display when authenticated */
+    /* flag the opposite rule page to #{protectPage}, authenticate user could not access, like Login */
+    unProtectPage?: boolean
+    /* flag the page is free to access */
     publicPage?: boolean
+    /* HTTP status code */
+    statusCode?: number
 }
-const publicPaths = ['/login']
-const AuthGuard = ({ children, protectPage, publicPage }: AuthGuardP) => {
+const AuthGuard = ({ children, protectPage, unProtectPage, statusCode = 0 }: AuthGuardP) => {
     const router = useRouter()
-    const { isAuthenticated, isLoading } = useAuth()
+    const { isAuthenticated, isLoading, currentUser } = useAuth()
 
     useEffect(() => {
-        if (isLoading) return
-        const path = router.asPath.split('?')[0]
-        if (protectPage && !isAuthenticated && !publicPaths.includes(path)) {
+        if (isLoading || statusCode > 399) return
+        if (isAuthenticated) {
+            if (unProtectPage) {
+                /* if page is protectPage and user authenticate, redirect to homepage */
+                router.push({
+                    pathname: (router.query?.returnUrl as string) ?? '/',
+                })
+            }
+        } else if (protectPage) {
             /* if page requires authentication, redirect to login page */
             router.push({
                 pathname: '/login',
                 query: { returnUrl: router.asPath },
             })
-        } else if (isAuthenticated && publicPage) {
-            /* if page is protectPage and user authenticate, redirect to homepage */
+        }
+    }, [isAuthenticated, protectPage, unProtectPage, router.asPath])
+
+    useEffect(() => {
+        if (statusCode > 399) return
+        if (currentUser?.emailVerified === false) {
             router.push({
-                pathname: (router.query?.returnUrl as string) ?? '/',
+                pathname: '/set-up-account',
             })
         }
-    }, [isAuthenticated, protectPage, publicPage, isLoading])
+    }, [currentUser, router.asPath])
 
-    if (isLoading) return <LoadingScreen />
+    if (isLoading) return <LoadingScreen mode='fullScreen' />
 
     return !protectPage || !!isAuthenticated ? <>{children}</> : null
 }

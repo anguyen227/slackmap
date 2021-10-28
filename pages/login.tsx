@@ -1,10 +1,10 @@
 import { browserLocalPersistence, browserSessionPersistence } from 'firebase/auth'
-import { Button, Checkbox, FormControlLabel, Typography } from '@mui/material'
-import { css } from '@emotion/css'
+import { Button, Checkbox, FormControlLabel, Typography, Container } from '@mui/material'
 import { getCookie } from 'cookies-next'
+import { GetStaticProps } from 'next'
+import { useRouter } from 'next/router'
 import { useState } from 'react'
 import * as Yup from 'yup'
-
 
 import Cookie from 'enum/Cookie'
 import useAuth from 'services/auth/useAuth'
@@ -15,18 +15,22 @@ import Input from 'components/Form/Input'
 import TextInput, { TextInputP } from 'components/Input/TextInput'
 
 const LoginPage = () => {
+    const router = useRouter()
     const { login, changePersistence } = useAuth()
     const [rememberMe, setRememberMe] = useState(browserLocalPersistence.type === getCookie(Cookie.AuthPersistence))
 
     return (
         <AppContainer title='Sign in to Slack Map'>
-            <div
-                className={css({
+            <Container
+                component='main'
+                maxWidth='sm'
+                sx={{
                     alignItems: 'center',
                     display: 'flex',
                     flexDirection: 'column',
-                    padding: '8rem 1rem 0',
-                })}>
+                    pt: 8,
+                    px: 1,
+                }}>
                 <Typography component='h1' variant='h5'>
                     Sign in
                 </Typography>
@@ -35,20 +39,28 @@ const LoginPage = () => {
                         email: '',
                         password: '',
                     }}
+                    noLoadingLayout
                     validateOnMount={false}
                     validationSchema={Yup.object().shape({
                         email: Yup.string().email('Invalid email').required('Required'),
                         password: Yup.string()
                             .required('Required')
                             // /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[-`~!#$%^&*()_=+\[\]{}\\|;:'",.<>\/?])/,
-                            .matches(/[a-z]+/, 'At least one lowercase character')
+                            // .matches(/[a-z]+/, 'At least one lowercase character')
                             // .matches(/[A-Z]+/, 'At least one uppercase character')
                             // .matches(/[0-9]+/, 'At least one numberic character')
                             // .matches(/[-!@~#$%^&*_+=`|\\\/(){}\[\]:;"'<>,.?]+/, 'At least one special character')
                             .min(8, 'Password is too short, min 8 characters'),
                     })}
                     onSubmit={async (values, helpers) => {
-                        await login?.(values.email, values.password)
+                        try {
+                            const res = await login?.(values.email, values.password)
+                            if (!res.user.emailVerified) {
+                                router.push({
+                                    pathname: '/set-up-account',
+                                })
+                            }
+                        } catch {}
                     }}>
                     <Input<TextInputP>
                         autoComplete='email'
@@ -92,9 +104,17 @@ const LoginPage = () => {
                         Sign In
                     </Button>
                 </Form>
-            </div>
+            </Container>
         </AppContainer>
     )
 }
 
 export default LoginPage
+
+export const getStaticProps: GetStaticProps = async (_context) => {
+    return {
+        props: {
+            unProtectPage: true,
+        },
+    }
+}

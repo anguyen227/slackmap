@@ -3,6 +3,8 @@ import { setCookies } from 'cookies-next'
 import { signInWithEmailAndPassword, signOut, Persistence, User, UserCredential } from 'firebase/auth'
 
 import handleAuthPersistence from './handleAuthPersistence'
+
+import Cookie from 'enum/Cookie'
 import FirebaseApp from 'FirebaseApp'
 
 type AuthActions = {
@@ -36,14 +38,14 @@ export const AuthProvider = ({ children }: AuthProviderP) => {
             if (user) {
                 try {
                     const token = await user.getIdToken()
-                    setCookies('token', token, {
+                    setCookies(Cookie.Token, token, {
                         path: '/',
                     })
                 } catch (e) {
                     console.error(e)
                 }
             } else {
-                setCookies('token', '', {
+                setCookies(Cookie.Token, '', {
                     path: '/',
                 })
             }

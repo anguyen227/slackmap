@@ -4,19 +4,23 @@ config.autoAddCss = false // Tell Font Awesome to skip adding the CSS automatica
 
 import { CacheProvider, EmotionCache } from '@emotion/react'
 import { CssBaseline } from '@mui/material'
+import { ErrorBoundary } from 'react-error-boundary'
 import { ThemeProvider } from '@mui/material/styles'
 import { useLocalStorage } from 'react-hooks'
 import Head from 'next/head'
 import React, { useEffect, useMemo } from 'react'
 import type { AppProps } from 'next/app'
 import type { NextPage } from 'next'
+
 import FirebaseApp from 'FirebaseApp'
 
 import theme from 'theme'
 import createEmotionCache from 'utils/createEmotionCache'
-import { AuthProvider } from 'services/auth/AuthProvider'
 
+import { AuthProvider } from 'services/auth/AuthProvider'
 import AuthGuard from 'services/auth/AuthGuard'
+
+import ErrorFallback from 'components/Error/ErrorFallback'
 
 FirebaseApp.init()
 
@@ -29,6 +33,7 @@ type AppPropsWithLayout = AppProps & {
 }
 
 function MyApp({ Component, pageProps, emotionCache = clientSideEmotionCache }: AppPropsWithLayout) {
+    const { protectPage, unProtectPage, publicPage, ...page } = pageProps
     const getLayout = Component.getLayout || ((page) => page)
     const [themeMode] = useLocalStorage<'light' | 'dark'>('theme-mode', 'light')
     const th = useMemo(() => theme(themeMode), [themeMode])
@@ -52,11 +57,21 @@ function MyApp({ Component, pageProps, emotionCache = clientSideEmotionCache }: 
             <ThemeProvider theme={th}>
                 {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
                 <CssBaseline />
-                <AuthProvider>
-                    <AuthGuard protectPage={pageProps?.protectPage}>
-                        {getLayout(<Component {...pageProps} />)}
-                    </AuthGuard>
-                </AuthProvider>
+                <ErrorBoundary
+                    FallbackComponent={ErrorFallback}
+                    onReset={() => {
+                        // reset the state of your app so the error doesn't happen again
+                    }}>
+                    <AuthProvider>
+                        <AuthGuard
+                            protectPage={protectPage}
+                            unProtectPage={unProtectPage}
+                            publicPage={publicPage}
+                            statusCode={page.statusCode}>
+                            {getLayout(<Component {...page} />)}
+                        </AuthGuard>
+                    </AuthProvider>
+                </ErrorBoundary>
             </ThemeProvider>
         </CacheProvider>
     )

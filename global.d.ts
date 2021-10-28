@@ -21,3 +21,7 @@ declare type ExtractProps<TComponentOrTProps> = TComponentOrTProps extends React
 declare type AsRequired<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>> & Required<Pick<T, K>>
 // turn required propt to optional
 declare type Optional<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>> & Partial<Pick<T, K>>
+
+declare module 'react-map-gl-geocoder' {
+    export default any
+}

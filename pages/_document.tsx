@@ -5,6 +5,9 @@ import Document, { Html, Head, Main, NextScript } from 'next/document'
 
 import createEmotionCache from 'utils/createEmotionCache'
 
+import { handleRedirect } from 'services/auth/handleRedirect'
+import { validateFirebaseIdToken } from 'services/auth/validateFirebaseIdToken'
+
 class MyDocument extends Document {
     render() {
         return (
@@ -62,10 +65,15 @@ MyDocument.getInitialProps = async (ctx) => {
     const cache = createEmotionCache()
     const { extractCriticalToChunks } = createEmotionServer(cache)
 
+    let pageProps: any = {}
+
     ctx.renderPage = () =>
         originalRenderPage({
             // useful for wrapping the whole react tree
-            enhanceApp: (App: any) => (props) => sheets.collect(<App emotionCache={cache} {...props} />),
+            enhanceApp: (App: any) => (props) => {
+                pageProps = props.pageProps ?? {}
+                return sheets.collect(<App emotionCache={cache} {...props} />)
+            },
             // useful for wrapping in a per-page basis
             // enhanceComponent: (Component) => Component,
         })
@@ -83,6 +91,28 @@ MyDocument.getInitialProps = async (ctx) => {
             dangerouslySetInnerHTML={{ __html: style.css }}
         />
     ))
+
+    if (
+        ctx.req &&
+        (pageProps.statusCode ?? 0) < 400 &&
+        !pageProps.publicPage &&
+        (pageProps.unProtectPage || process.env.NEXT_PUBLIC_PROTECT_ALL || pageProps.protectPage)
+    ) {
+        try {
+            const { verified } = await validateFirebaseIdToken(ctx.req)
+            if (verified) {
+                if (pageProps.unProtectPage) {
+                    handleRedirect(ctx, '/', true)
+                }
+            } else {
+                handleRedirect(ctx, '/set-up-account', true)
+            }
+        } catch (e) {
+            if (!pageProps.unProtectPage) {
+                handleRedirect(ctx, '/login')
+            }
+        }
+    }
 
     return {
         ...initialProps,

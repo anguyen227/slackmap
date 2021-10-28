@@ -17,15 +17,6 @@ const theme = (paletteMode: PaletteMode = 'light') => {
         components: {
             MuiCssBaseline: {
                 styleOverrides: {
-                    html: {
-                        minHeight: '100vh',
-                    },
-                    body: {
-                        minHeight: '100vh',
-                    },
-                    '#__next': {
-                        minHeight: '100vh',
-                    },
                     a: {
                         color: palette.text.primary,
                         textDecoration: 'none',

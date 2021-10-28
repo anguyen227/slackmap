@@ -2,7 +2,6 @@
 import { initializeApp, getApp, getApps, FirebaseApp as FA } from 'firebase/app'
 import { getFirestore, connectFirestoreEmulator, Firestore } from 'firebase/firestore'
 import { getAuth, connectAuthEmulator, Auth } from 'firebase/auth'
-import { getFunctions, connectFunctionsEmulator, Functions } from 'firebase/functions'
 import { getCookie } from 'cookies-next'
 
 import handleAuthPersistence from 'services/auth/handleAuthPersistence'
@@ -27,26 +26,22 @@ export default class FirebaseApp {
     static app: FA
     static db: Firestore
     static auth: Auth
-    static functions: Functions
     static async init() {
         if (typeof window !== 'undefined' && !getApps().length) {
-            // Initialize Firebase
-            this.app = initializeApp(firebaseConfig)
-
-            this.db = getFirestore()
-
-            this.auth = getAuth()
             try {
+                // Initialize Firebase
+                this.app = initializeApp(firebaseConfig)
+
+                this.db = getFirestore()
+
+                this.auth = getAuth()
                 handleAuthPersistence(getCookie(Cookie.AuthPersistence) as string)
+
+                if (process.env.NODE_ENV === 'development') {
+                    connectFirestoreEmulator(this.db, 'localhost', 8880)
+                    connectAuthEmulator(this.auth, 'http://localhost:9099', { disableWarnings: true })
+                }
             } catch {}
-
-            this.functions = getFunctions(getApp())
-
-            if (process.env.NODE_ENV === 'development') {
-                connectFirestoreEmulator(this.db, 'localhost', 8880)
-                connectAuthEmulator(this.auth, 'http://localhost:9099', { disableWarnings: true })
-                connectFunctionsEmulator(this.functions, 'localhost', 5001)
-            }
         }
     }
 }
