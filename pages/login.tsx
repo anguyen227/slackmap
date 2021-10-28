@@ -2,7 +2,6 @@ import { browserLocalPersistence, browserSessionPersistence } from 'firebase/aut
 import { Button, Checkbox, FormControlLabel, Typography, Container } from '@mui/material'
 import { getCookie } from 'cookies-next'
 import { GetStaticProps } from 'next'
-import { useRouter } from 'next/router'
 import { useState } from 'react'
 import * as Yup from 'yup'
 
@@ -13,9 +12,9 @@ import AppContainer from 'components/AppContainer'
 import Form from 'components/Form'
 import Input from 'components/Form/Input'
 import TextInput, { TextInputP } from 'components/Input/TextInput'
+import parseError from 'utils/parseError'
 
 const LoginPage = () => {
-    const router = useRouter()
     const { login, changePersistence } = useAuth()
     const [rememberMe, setRememberMe] = useState(browserLocalPersistence.type === getCookie(Cookie.AuthPersistence))
 
@@ -55,12 +54,19 @@ const LoginPage = () => {
                     onSubmit={async (values, helpers) => {
                         try {
                             const res = await login?.(values.email, values.password)
-                            if (!res.user.emailVerified) {
-                                router.push({
-                                    pathname: '/set-up-account',
+                            // if (!res.user.emailVerified) {
+                            //     router.push({
+                            //         pathname: '/set-up-account',
+                            //     })
+                            // }
+                        } catch (e) {
+                            const error = parseError(e)
+                            if (error.code === 'auth/wrong-password') {
+                                helpers.setErrors({
+                                    password: 'Password is incorrect',
                                 })
                             }
-                        } catch {}
+                        }
                     }}>
                     <Input<TextInputP>
                         autoComplete='email'

@@ -40,7 +40,7 @@ export const validateFirebaseIdToken = async (req: IncomingMessage) => {
         try {
             await FirebaseAdmin.isInit()
             const decodedIdToken = await FirebaseAdmin.auth.verifyIdToken(idToken)
-            // console.log('ID Token correctly decoded', decodedIdToken)
+            console.log('ID Token correctly decoded', idToken, decodedIdToken)
             return decodedIdToken
         } catch (err) {
             console.error('Error while verifying Firebase ID token:', err)

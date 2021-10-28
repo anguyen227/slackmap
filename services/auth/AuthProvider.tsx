@@ -1,11 +1,11 @@
 import { createContext, useEffect, useState } from 'react'
-import { setCookies } from 'cookies-next'
 import { signInWithEmailAndPassword, signOut, Persistence, User, UserCredential } from 'firebase/auth'
+import { useRouter } from 'next/router'
 
 import handleAuthPersistence from './handleAuthPersistence'
 
-import Cookie from 'enum/Cookie'
 import FirebaseApp from 'FirebaseApp'
+import { getIdToken } from './getIdToken'
 
 type AuthActions = {
     login: (email: string, password: string) => Promise<UserCredential>
@@ -28,6 +28,7 @@ type AuthProviderP = {
     children: React.ReactNode
 }
 export const AuthProvider = ({ children }: AuthProviderP) => {
+    const router = useRouter()
     const [currentUser, setCurrentUser] = useState<User | null>(null)
     const [loading, setLoading] = useState(true)
 
@@ -36,18 +37,18 @@ export const AuthProvider = ({ children }: AuthProviderP) => {
         // call setUser and write new token as a cookie
         FirebaseApp.auth?.onIdTokenChanged?.(async (user) => {
             if (user) {
-                try {
-                    const token = await user.getIdToken()
-                    setCookies(Cookie.Token, token, {
-                        path: '/',
+                if (!user.emailVerified) {
+                    router.push({
+                        pathname: '/set-up-account',
                     })
+                }
+                try {
+                    getIdToken()
                 } catch (e) {
                     console.error(e)
                 }
             } else {
-                setCookies(Cookie.Token, '', {
-                    path: '/',
-                })
+                getIdToken('')
             }
             setCurrentUser(user)
             setLoading(false)
@@ -55,8 +56,7 @@ export const AuthProvider = ({ children }: AuthProviderP) => {
 
         // force refresh the token every 10 minutes
         const handle = setInterval(async () => {
-            const user = FirebaseApp.auth?.currentUser
-            if (user) await user.getIdToken(true)
+            getIdToken(undefined, true)
         }, 10 * 60 * 1000)
 
         return () => {

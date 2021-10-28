@@ -9,7 +9,6 @@ import LoadingScreen from 'components/Loading/LoadingScreen'
 import Pin from './Pin'
 
 import axios from 'api/axios'
-import FirebaseApp from 'FirebaseApp'
 
 const Map = dynamic(() => import('components/Map'), {
     loading: () => <LoadingScreen />,
@@ -103,7 +102,6 @@ const MapDropMarker = ({ onComplete }: MapDropMarkerProps) => {
                 method: 'POST',
                 data: { ...pin?.data },
             })
-            await FirebaseApp.auth.currentUser?.getIdToken?.(true)
             onComplete?.()
         } catch {}
     }

@@ -4,6 +4,7 @@ import React, { useEffect } from 'react'
 import LoadingScreen from 'components/Loading/LoadingScreen'
 
 import useAuth from './useAuth'
+import { NoReturnUrl } from 'utils/constant'
 
 type AuthGuardP = {
     children: React.ReactNode
@@ -18,7 +19,7 @@ type AuthGuardP = {
 }
 const AuthGuard = ({ children, protectPage, unProtectPage, statusCode = 0 }: AuthGuardP) => {
     const router = useRouter()
-    const { isAuthenticated, isLoading, currentUser } = useAuth()
+    const { isAuthenticated, isLoading } = useAuth()
 
     useEffect(() => {
         if (isLoading || statusCode > 399) return
@@ -31,21 +32,13 @@ const AuthGuard = ({ children, protectPage, unProtectPage, statusCode = 0 }: Aut
             }
         } else if (protectPage) {
             /* if page requires authentication, redirect to login page */
+            const props = NoReturnUrl.includes(router.asPath) ? {} : { query: { returnUrl: router.asPath } }
             router.push({
                 pathname: '/login',
-                query: { returnUrl: router.asPath },
+                ...props,
             })
         }
     }, [isAuthenticated, protectPage, unProtectPage, router.asPath])
-
-    useEffect(() => {
-        if (statusCode > 399) return
-        if (currentUser?.emailVerified === false) {
-            router.push({
-                pathname: '/set-up-account',
-            })
-        }
-    }, [currentUser, router.asPath])
 
     if (isLoading) return <LoadingScreen mode='fullScreen' />
 

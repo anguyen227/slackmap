@@ -6,6 +6,8 @@ import React, { useState } from 'react'
 
 import ChangePassword from 'components/Form/f.ChangePassword'
 
+import { getIdToken } from 'services/auth/getIdToken'
+
 const steps = ['Change password', 'Set up location']
 
 const Map = dynamic(() => import('components/Map/MapDropMarker'), {
@@ -28,7 +30,13 @@ function getStepContent(step: number, handleStep: (index: number) => void) {
         case 1:
             return (
                 <Container maxWidth='lg'>
-                    <Map onComplete={() => handleStep(1)} />
+                    <Map
+                        onComplete={() => {
+                            getIdToken(null, true).then(() => {
+                                handleStep(1)
+                            })
+                        }}
+                    />
                 </Container>
             )
         default:

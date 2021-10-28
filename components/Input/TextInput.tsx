@@ -5,14 +5,8 @@ import React from 'react'
 export type TextInputP = Omit<TextFieldProps, 'variant'> & FieldProps
 
 const TextInput = ({ field, form, meta, ...props }: TextInputP) => {
-    return (
-        <TextField
-            {...props}
-            {...field}
-            error={!!meta.error && meta.touched}
-            helperText={meta.error || props.helperText}
-        />
-    )
+    const error = !!meta.error && meta.touched
+    return <TextField {...props} {...field} error={error} helperText={(error && meta.error) || props.helperText} />
 }
 
 export default TextInput

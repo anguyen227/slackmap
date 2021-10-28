@@ -99,9 +99,9 @@ MyDocument.getInitialProps = async (ctx) => {
         (pageProps.unProtectPage || process.env.NEXT_PUBLIC_PROTECT_ALL || pageProps.protectPage)
     ) {
         try {
-            const { verified } = await validateFirebaseIdToken(ctx.req)
-            if (verified) {
-                if (pageProps.unProtectPage) {
+            const { email_verified } = await validateFirebaseIdToken(ctx.req)
+            if (email_verified) {
+                if (pageProps.unProtectPage || ['/set-up-account'].includes(ctx.pathname)) {
                     handleRedirect(ctx, '/', true)
                 }
             } else {
