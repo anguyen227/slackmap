@@ -4,18 +4,18 @@ import { apiHandler } from 'api/apiHandler'
 import { validateUser } from 'api/validateUser'
 import { verifyAdmin } from 'api/verifyAdmin'
 
-import ClientError from 'DTO/ClientError'
+import ClientError from 'models/ClientError'
 import FirebaseAdmin from 'FirebaseAdmin'
-import MemberDTO from 'DTO/Member'
-import UserDTO from 'DTO/User'
 
 import { ErrorCode } from 'enum/ErrorCode'
+import { UserAdmin } from 'DTO/Admin/User'
+import { MemberAdmin } from 'DTO/Admin/Member'
 
 const setUpMember: NextApiHandler = async (req, res) => {
     try {
         const { latitude, longitude } = req.body
         const user = await validateUser(req, res)
-        const userDoc = await UserDTO.isExist(UserDTO._doc(user.uid))
+        const userDoc = await UserAdmin.isExist(UserAdmin.doc(user.uid))
 
         if (userDoc) {
             // get user slack profile
@@ -29,8 +29,8 @@ const setUpMember: NextApiHandler = async (req, res) => {
             // validate email to create account
             if (email) {
                 // add member document
-                await MemberDTO.create(
-                    MemberDTO._col(userDoc.teamId),
+                await MemberAdmin.create(
+                    MemberAdmin.col(userDoc.teamId),
                     {
                         email,
                         userId: userDoc.userId,

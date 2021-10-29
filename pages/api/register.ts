@@ -3,20 +3,20 @@ import type { NextApiHandler, NextApiRequest } from 'next'
 import { apiHandler } from 'api/apiHandler'
 import { verifyAdmin } from 'api/verifyAdmin'
 
-import ClientError from 'DTO/ClientError'
+import ClientError from 'models/ClientError'
 import FirebaseAdmin from 'FirebaseAdmin'
-import TeamDTO from 'DTO/Team'
-import UserDTO from 'DTO/User'
 
 import { ErrorCode } from 'enum/ErrorCode'
 import { verifySlack } from 'api/verifySlack'
+import { UserAdmin } from 'DTO/Admin/User'
+import { TeamAdmin } from 'DTO/Admin/Team'
 
 const register: NextApiHandler = async (req, res) => {
     try {
         const { team_id, user_id } = req.body || {}
 
         if (team_id && user_id) {
-            const existed = await UserDTO.isExist(UserDTO._doc(user_id))
+            const existed = await UserAdmin.isExist(UserAdmin.doc(user_id))
             if (existed) {
                 res.status(200).send("You've already been added")
             } else {
@@ -38,10 +38,10 @@ const handleRegistration = async (req: NextApiRequest) => {
 
     try {
         // check team existence, add if not
-        const existed = await TeamDTO.isExist(TeamDTO._doc(team_id))
+        const existed = await TeamAdmin.isExist(TeamAdmin.doc(team_id))
         if (!existed) {
-            await TeamDTO.create(
-                TeamDTO._col(),
+            await TeamAdmin.create(
+                TeamAdmin.col(),
                 {
                     teamDomain: team_domain,
                 },
@@ -60,9 +60,9 @@ const handleRegistration = async (req: NextApiRequest) => {
         if (email) {
             // create user account
             const password = Math.random().toString(36).slice(-8)
-            const userRecord = await UserDTO.createAccount(email, password)
-            await UserDTO.create(
-                UserDTO._col(),
+            const userRecord = await UserAdmin.createAccount(email, password)
+            await UserAdmin.create(
+                UserAdmin.col(),
                 {
                     teamId: team_id,
                     userId: user_id,

@@ -3,9 +3,9 @@ import { getCookies } from 'cookies-next'
 
 import FirebaseAdmin from 'FirebaseAdmin'
 
-import ClientError from 'DTO/ClientError'
-
 import { ErrorCode } from 'enum/ErrorCode'
+
+import ClientError from 'models/ClientError'
 
 /**
  * verify firebase user by id token

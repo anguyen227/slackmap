@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 import * as crypto from 'crypto'
 import tsscmp from 'tsscmp'
-import ClientError from 'DTO/ClientError'
+import ClientError from 'models/ClientError'
 import { ErrorCode } from 'enum/ErrorCode'
 
 /**

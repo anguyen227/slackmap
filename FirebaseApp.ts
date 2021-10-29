@@ -22,7 +22,7 @@ const firebaseConfig = {
     measurementId: process.env.NEXT_PUBLIC_MEASUREMENTID,
 }
 
-export default class FirebaseApp {
+class FirebaseApp {
     static app: FA
     static db: Firestore
     static auth: Auth
@@ -45,3 +45,5 @@ export default class FirebaseApp {
         }
     }
 }
+
+export default FirebaseApp

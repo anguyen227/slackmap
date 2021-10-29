@@ -1,56 +1,51 @@
+import { CircularProgress } from '@mui/material'
 import { css } from '@emotion/css'
 import clsx from 'clsx'
-import { CircularProgress } from '@mui/material'
 
 type Mode = 'absolute' | 'relative' | 'fullScreen'
-type LoadingScreenP = {
-    children?: React.ReactNode
+export type LoadingScreenProps = JSX.IntrinsicElements['div'] & {
     mode?: Mode
-    className?: string
-    style?: React.CSSProperties
-    background?: boolean
+    overlay?: boolean
     loading?: boolean
 }
-const modeStyle: Record<Mode, React.CSSProperties> = {
-    absolute: {
+const modeStyle: Record<Mode, string> = {
+    absolute: css({
         height: '100%',
+        left: 0,
         position: 'absolute',
+        top: 0,
         width: '100%',
-    },
-    relative: {
+    }),
+    relative: css({
         height: '100%',
         width: '100%',
-    },
-    fullScreen: {
+    }),
+    fullScreen: css({
         height: '100vh',
+        left: 0,
         position: 'fixed',
+        top: 0,
         width: '100%',
-    },
+    }),
 }
 
-const backDrop = css({
-    backgroundColor: `rgba(0,0,0,.12)`,
+const overLay = css({
+    backgroundColor: `rgba(0,0,0,.22)`,
 })
 
-const LoadingScreen = ({ children, mode, className, style, background, loading }: LoadingScreenP) => {
+const LoadingScreen = ({ children, mode, className, overlay, loading, style, ...props }: LoadingScreenProps) => {
     const visible = typeof loading === 'boolean' ? loading : true
     return visible ? (
         <div
             className={clsx(
-                css({
-                    alignItems: 'center',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    zIndex: 99,
-                    top: 0,
-                    left: 0,
-                }),
+                css({ top: 0, left: 0, zIndex: 99, justifyContent: 'center', alignItems: 'center', display: 'flex' }),
+                modeStyle[mode ?? 'relative'],
                 {
-                    [backDrop]: background,
+                    [overLay]: overlay,
                 },
                 className
             )}
-            style={{ ...modeStyle[mode ?? 'relative'], ...style }}>
+            {...props}>
             {children || (
                 <>
                     <CircularProgress />

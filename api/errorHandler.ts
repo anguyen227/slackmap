@@ -1,4 +1,4 @@
-import ClientError from 'DTO/ClientError'
+import ClientError from 'models/ClientError'
 import { NextApiResponse } from 'next'
 
 export const errorHandler = (error: any, res: NextApiResponse) => {

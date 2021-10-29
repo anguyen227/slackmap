@@ -2,8 +2,7 @@ import { App } from '@slack/bolt'
 import admin from 'firebase-admin'
 
 import { ErrorCode } from 'enum/ErrorCode'
-
-import ClientError from './DTO/ClientError'
+import ClientError from 'models/ClientError'
 
 class FirebaseAdmin {
     static app: typeof admin

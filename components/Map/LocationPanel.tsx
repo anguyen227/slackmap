@@ -39,7 +39,7 @@ const LocationPanel = ({ loading, place, onSetLocation }: LocationPanelProps) =>
                     <Button onClick={onSetLocation} variant='contained'>
                         Set as location
                     </Button>
-                    {loading && <LoadingScreen mode='absolute' background />}
+                    {loading && <LoadingScreen mode='absolute' overlay />}
                 </Paper>
             </Fade>
         </div>
