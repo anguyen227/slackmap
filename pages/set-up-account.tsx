@@ -1,5 +1,4 @@
 import { Container, Link, Step, StepLabel, Stepper, Typography } from '@mui/material'
-import { GetServerSidePropsContext } from 'next'
 import dynamic from 'next/dynamic'
 import NextLink from 'next/link'
 import React, { useState } from 'react'
@@ -101,7 +100,7 @@ const SetUpAccount = () => {
 
 export default SetUpAccount
 
-export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+export const getStaticProps = async () => {
     return {
         props: {
             protectPage: true,

@@ -6,13 +6,13 @@ import { useState } from 'react'
 import * as Yup from 'yup'
 
 import Cookie from 'enum/Cookie'
+import parseError from 'utils/parseError'
 import useAuth from 'services/auth/useAuth'
 
 import AppContainer from 'components/AppContainer'
 import Form from 'components/Form'
 import Input from 'components/Form/Input'
 import TextInput, { TextInputP } from 'components/Input/TextInput'
-import parseError from 'utils/parseError'
 
 const LoginPage = () => {
     const { login, changePersistence } = useAuth()

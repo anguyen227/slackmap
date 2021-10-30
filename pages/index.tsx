@@ -17,29 +17,6 @@ import useAuth from 'services/auth/useAuth'
 // })
 
 const Home: NextPage = () => {
-    const { logout } = useAuth()
-    async function getUser() {
-        // const uid = FirebaseApp.auth.currentUser?.uid
-        const docRef = doc(FirebaseApp.db, Collection.User, 'Xvjbkwevdc4Kuads2wUerKg0so13')
-        // if (uid) {
-        //     const docRef = doc(FirebaseApp.db, 'cities', 'SF', Collection.User, uid)
-        const docSnap = await getDoc(docRef)
-        console.log('uid', docSnap.data())
-        //     // const user = await getDoc(doc(FirebaseApp.db, Collection.User, uid))
-        //     // console.log('user', user)
-        // }
-    }
-
-    useEffect(() => {
-        // console.log('homepage')
-        // try {
-        //     getUser()
-        // } catch (e) {
-        //     console.log(JSON.stringify(e, null, 4))
-        // }
-        // const cols = collection(FirebaseApp.db, Collection.User)
-    }, [])
-
     return (
         <AppContainer title='Slack Map'>
             <button
@@ -57,20 +34,8 @@ const Home: NextPage = () => {
                 }}>
                 toggle verified account
             </button>
-            <button
-                onClick={() => {
-                    logout()
-                }}>
-                logout
-            </button>
-            <button
-                onClick={() => {
-                    getUser()
-                }}>
-                database test
-            </button>
+
             <LoadingScreen>home page</LoadingScreen>
-            {/* <Map /> */}
         </AppContainer>
     )
 }
@@ -82,9 +47,3 @@ export const getServerSideProps = async (ctx: any) => {
         props: {} as never,
     }
 }
-
-// export const getStaticProps = async (ctx: any) => {
-//     return {
-//         props: {} as never,
-//     }
-// }

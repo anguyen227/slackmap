@@ -1,5 +1,5 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp, getApp, getApps, FirebaseApp as FA } from 'firebase/app'
+import { initializeApp, getApps, FirebaseApp as FA } from 'firebase/app'
 import { getFirestore, connectFirestoreEmulator, Firestore } from 'firebase/firestore'
 import { getAuth, connectAuthEmulator, Auth } from 'firebase/auth'
 import { getCookie } from 'cookies-next'

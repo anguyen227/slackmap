@@ -7,5 +7,4 @@ export const errorHandler = (error: any, res: NextApiResponse) => {
     } else {
         res.status(500).send(JSON.stringify(error, null, 4))
     }
-    console.log(JSON.stringify(error, null, 4))
 }

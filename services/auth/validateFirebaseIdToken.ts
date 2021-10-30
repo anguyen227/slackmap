@@ -29,7 +29,7 @@ export const validateFirebaseIdToken = async (req: IncomingMessage) => {
 
     let idToken
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
-        // console.log('Found "Authorization" header')
+        console.log('Found "Authorization" header')
         // Read the ID Token from the Authorization header.
         idToken = req.headers.authorization.split(' ')[1]
     } else if (cookies && cookies.token) {
