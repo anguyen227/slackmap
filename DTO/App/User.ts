@@ -2,7 +2,7 @@ import { SystemApp } from './System'
 import Collection from 'enum/Collection'
 import { User } from 'models/User'
 import { Location } from 'models/Location'
-import axios from 'api/axios'
+import axios from 'services/axios'
 import { AxiosResponse } from 'axios'
 
 class App extends SystemApp<User> {

@@ -1,8 +1,8 @@
 import type { NextApiHandler } from 'next'
 
-import { apiHandler } from 'api/apiHandler'
-import { validateUser } from 'api/validateUser'
-import { verifyAdmin } from 'api/verifyAdmin'
+import { apiHandler } from 'services/apiHandler'
+import { validateUser } from 'services/validateUser'
+import { verifyAdmin } from 'services/verifyAdmin'
 
 import ClientError from 'models/ClientError'
 

@@ -1,13 +1,13 @@
 import type { NextApiHandler, NextApiRequest } from 'next'
 
-import { apiHandler } from 'api/apiHandler'
-import { verifyAdmin } from 'api/verifyAdmin'
+import { apiHandler } from 'services/apiHandler'
+import { verifyAdmin } from 'services/verifyAdmin'
 
 import ClientError from 'models/ClientError'
 import FirebaseAdmin from 'FirebaseAdmin'
 
 import { ErrorCode } from 'enum/ErrorCode'
-import { verifySlack } from 'api/verifySlack'
+import { verifySlack } from 'services/verifySlack'
 
 import { UserAdmin } from 'DTO/Admin/User'
 import { TeamAdmin } from 'DTO/Admin/Team'
