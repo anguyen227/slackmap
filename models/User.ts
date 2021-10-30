@@ -1,6 +1,14 @@
 import { System } from './System'
+import { Location } from './Location'
 
-export interface User extends System {
-    teamId: string
-    userId: string
+type Team = {
+    team_id: string
+    user_id: string
+}
+
+export interface User extends System, Location {
+    teams?: Team[]
+    initialized?: boolean
+    email: string
+    default_team?: [string, string]
 }

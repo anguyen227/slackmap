@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 
 import LoadingScreen from 'components/Loading/LoadingScreen'
 
@@ -18,8 +18,13 @@ type AuthGuardP = {
     statusCode?: number
 }
 const AuthGuard = ({ children, protectPage, unProtectPage, statusCode = 0 }: AuthGuardP) => {
+    const _mounted = useRef(false)
     const router = useRouter()
-    const { isAuthenticated, isLoading } = useAuth()
+    const { isAuthenticated, isLoading, uid, user } = useAuth()
+
+    useEffect(() => {
+        _mounted.current = true
+    }, [])
 
     useEffect(() => {
         if (isLoading || statusCode > 399) return
@@ -38,11 +43,14 @@ const AuthGuard = ({ children, protectPage, unProtectPage, statusCode = 0 }: Aut
                 ...props,
             })
         }
-    }, [isAuthenticated, protectPage, unProtectPage, router.asPath])
+    }, [isAuthenticated, isLoading, uid, user])
 
-    if (isLoading) return <LoadingScreen mode='fullScreen' />
-
-    return !protectPage || !!isAuthenticated ? <>{children}</> : null
+    return (
+        <>
+            {isLoading && <LoadingScreen mode='fullScreen' overlay />}
+            {_mounted.current && (!protectPage || !!isAuthenticated) && <>{children}</>}
+        </>
+    )
 }
 
 export default AuthGuard

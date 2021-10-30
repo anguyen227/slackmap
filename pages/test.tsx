@@ -1,17 +1,13 @@
 import axios from 'api/axios'
+import MapDropMarker from 'components/Map/MapDropMarker'
+import React from 'react'
 
 const LoginPage = () => {
-    const onClick = () => {
-        axios().request({
-            url: '/user/setUp',
-            method: 'POST',
-            data: {
-                check: 'this out',
-            },
-        })
-    }
-
-    return <button onClick={onClick}>Send Request</button>
+    return (
+        <>
+            <MapDropMarker />
+        </>
+    )
 }
 
 export default LoginPage

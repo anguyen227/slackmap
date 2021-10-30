@@ -8,7 +8,8 @@ import GeoLocate from './GeoLocate'
 import LoadingScreen from 'components/Loading/LoadingScreen'
 import Pin from './Pin'
 
-import axios from 'api/axios'
+import { UserApp } from 'DTO/App/User'
+import useAuth from 'services/auth/useAuth'
 
 const Map = dynamic(() => import('components/Map'), {
     loading: () => <LoadingScreen />,
@@ -33,6 +34,7 @@ type MapDropMarkerProps = {
     onComplete?(): void
 }
 const MapDropMarker = ({ onComplete }: MapDropMarkerProps) => {
+    const { updateUser } = useAuth()
     const [viewport, setViewport] = useState<InteractiveMapProps>({
         longitude: -104.84161,
         latitude: 59.188565,
@@ -97,11 +99,9 @@ const MapDropMarker = ({ onComplete }: MapDropMarkerProps) => {
 
     const handleSetLocation = async () => {
         try {
-            await axios().request({
-                url: '/member/set-up',
-                method: 'POST',
-                data: { ...pin?.data },
-            })
+            const user = await UserApp.setUp(pin?.data)
+            updateUser(user.data)
+
             onComplete?.()
         } catch {}
     }

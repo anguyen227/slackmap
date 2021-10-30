@@ -1,13 +1,9 @@
 import { System } from './System'
+import { Location } from './Location'
 
-export interface Member extends System {
-    email: string
-    userId: string
-    avatarUrl?: string
-    displayName?: string
+export interface Member extends System, Location {
+    avatar_url?: string
+    display_name?: string
     uid?: string
-    geohash?: string
-    lat?: number | null
-    lng?: number | null
-    isAdmin?: boolean
+    is_admin?: boolean
 }

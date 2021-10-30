@@ -9,10 +9,13 @@ class Admin extends SystemAdmin<Member> {
         FirebaseAdmin.db
             .collection(Collection.Team)
             .doc(teamId)
-            .collection(Collection.Member) as FirebaseFirestore.CollectionReference<Member>
+            .collection(Collection.Member)
+            .withConverter(
+                this.dataConverter as FirebaseFirestore.FirestoreDataConverter<Member>
+            ) as FirebaseFirestore.CollectionReference<Member>
 
     doc(teamId: string, id: string) {
-        return this.col(teamId).doc(id) as FirebaseFirestore.DocumentReference<Member>
+        return this.col(teamId).doc(id)
     }
 }
 

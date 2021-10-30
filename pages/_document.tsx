@@ -7,6 +7,7 @@ import createEmotionCache from 'utils/createEmotionCache'
 
 import { handleRedirect } from 'services/auth/handleRedirect'
 import { validateFirebaseIdToken } from 'services/auth/validateFirebaseIdToken'
+import { UserAdmin } from 'DTO/Admin/User'
 
 class MyDocument extends Document {
     render() {
@@ -92,24 +93,26 @@ MyDocument.getInitialProps = async (ctx) => {
         />
     ))
 
-    if (
-        ctx.req &&
-        (pageProps.statusCode ?? 0) < 400 &&
-        !pageProps.publicPage &&
-        (pageProps.unProtectPage || process.env.NEXT_PUBLIC_PROTECT_ALL || pageProps.protectPage)
-    ) {
-        try {
-            const { email_verified } = await validateFirebaseIdToken(ctx.req)
-            if (email_verified) {
-                if (pageProps.unProtectPage || ['/set-up-account'].includes(ctx.pathname)) {
-                    handleRedirect(ctx, '/', true)
+    if (ctx.req && (pageProps.statusCode ?? 0) < 400) {
+        const needAuthenticate = pageProps.publicPage
+            ? false
+            : pageProps.unProtectPage || process.env.NEXT_PUBLIC_PROTECT_ALL || pageProps.protectPage
+        if (needAuthenticate) {
+            try {
+                const res = await validateFirebaseIdToken(ctx.req)
+                const { uid } = res
+                const user = await UserAdmin.get(UserAdmin.doc(uid))
+                if (user?.initialized) {
+                    if (pageProps.unProtectPage || ['/set-up-account'].includes(ctx.pathname)) {
+                        handleRedirect(ctx, '/', true)
+                    }
+                } else {
+                    handleRedirect(ctx, '/set-up-account', true)
                 }
-            } else {
-                handleRedirect(ctx, '/set-up-account', true)
-            }
-        } catch (e) {
-            if (!pageProps.unProtectPage) {
-                handleRedirect(ctx, '/login')
+            } catch (e) {
+                if (!pageProps.unProtectPage) {
+                    handleRedirect(ctx, '/login')
+                }
             }
         }
     }

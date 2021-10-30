@@ -53,12 +53,7 @@ const LoginPage = () => {
                     })}
                     onSubmit={async (values, helpers) => {
                         try {
-                            const res = await login?.(values.email, values.password)
-                            // if (!res.user.emailVerified) {
-                            //     router.push({
-                            //         pathname: '/set-up-account',
-                            //     })
-                            // }
+                            await login?.(values.email, values.password)
                         } catch (e) {
                             const error = parseError(e)
                             if (error.code === 'auth/wrong-password') {

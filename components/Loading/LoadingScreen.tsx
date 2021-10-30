@@ -6,6 +6,7 @@ type Mode = 'absolute' | 'relative' | 'fullScreen'
 export type LoadingScreenProps = JSX.IntrinsicElements['div'] & {
     mode?: Mode
     overlay?: boolean
+    backdrop?: boolean
     loading?: boolean
 }
 const modeStyle: Record<Mode, string> = {
@@ -30,10 +31,22 @@ const modeStyle: Record<Mode, string> = {
 }
 
 const overLay = css({
+    backgroundColor: `#fff`,
+})
+const backDrop = css({
     backgroundColor: `rgba(0,0,0,.22)`,
 })
 
-const LoadingScreen = ({ children, mode, className, overlay, loading, style, ...props }: LoadingScreenProps) => {
+const LoadingScreen = ({
+    children,
+    mode,
+    className,
+    overlay,
+    backdrop,
+    loading,
+    style,
+    ...props
+}: LoadingScreenProps) => {
     const visible = typeof loading === 'boolean' ? loading : true
     return visible ? (
         <div
@@ -42,6 +55,7 @@ const LoadingScreen = ({ children, mode, className, overlay, loading, style, ...
                 modeStyle[mode ?? 'relative'],
                 {
                     [overLay]: overlay,
+                    [backDrop]: backdrop,
                 },
                 className
             )}

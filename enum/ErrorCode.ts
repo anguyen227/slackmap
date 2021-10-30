@@ -6,4 +6,5 @@ export enum ErrorCode {
     UserNotFound = 'user/not-found',
     SlackUnauthenticate = 'slack/unauthenticate',
     Unauthenticate = 'user/unauthenticate',
+    InvalidLocation = 'data/invalid-location-data',
 }
