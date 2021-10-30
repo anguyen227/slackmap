@@ -47,8 +47,8 @@ const AuthGuard = ({ children, protectPage, unProtectPage, statusCode = 0 }: Aut
 
     return (
         <>
-            {isLoading && <LoadingScreen mode='fullScreen' overlay />}
             {_mounted.current && (!protectPage || !!isAuthenticated) && <>{children}</>}
+            {isLoading && <LoadingScreen mode='fullScreen' overlay />}
         </>
     )
 }

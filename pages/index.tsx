@@ -10,32 +10,52 @@ import Collection from 'enum/Collection'
 import axios from 'api/axios'
 import { getIdToken } from 'services/auth/getIdToken'
 import useAuth from 'services/auth/useAuth'
+import { GeoData, MemberApp } from 'DTO/App/Member'
+import useCollection from 'hooks/useCollection'
+import LoadingLayout from 'components/Layout/LoadingLayout'
+import type { MapMembersProps } from 'components/Map/MapMembers'
 
-// const Map = dynamic(() => import('components/Map'), {
-//     loading: () => <>{'Loading...'}</>,
-//     ssr: false,
-// })
+const Map = dynamic<MapMembersProps>(() => import('components/Map/MapMembers'), {
+    loading: () => <LoadingScreen>...map initializing</LoadingScreen>,
+    ssr: false,
+})
 
 const Home: NextPage = () => {
+    const { user } = useAuth()
+    const [teamId] = user?.default_team || []
+
+    const { loading, data, fetchDocs } = useCollection<GeoData>(
+        teamId
+            ? MemberApp.col(teamId).withConverter(
+                  MemberApp.dataConverter({
+                      fromFirestore: MemberApp.toGeoJSON,
+                  })
+              )
+            : null,
+        { loading: true, data: [] }
+    )
+
+    useEffect(() => {
+        if (teamId) {
+            fetchDocs()
+        }
+    }, [user])
+
     return (
         <AppContainer title='Slack Map'>
-            <button
-                onClick={async () => {
-                    try {
-                        const res = await axios().request({
-                            url: '/test',
-                            method: 'get',
-                        })
-                        const token = await getIdToken(null, true)
-                        // console.log(res, token)
-                    } catch (err) {
-                        console.log('err', err)
-                    }
+            <LoadingLayout
+                loading={loading}
+                disableGutters
+                maxWidth={false}
+                sx={{
+                    height: '100vh',
+                }}
+                loadingProps={{
+                    mode: 'fullScreen',
+                    children: '...loading teamates',
                 }}>
-                toggle verified account
-            </button>
-
-            <LoadingScreen>home page</LoadingScreen>
+                <Map data={data as any[]} />
+            </LoadingLayout>
         </AppContainer>
     )
 }

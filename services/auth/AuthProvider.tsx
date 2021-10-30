@@ -1,4 +1,4 @@
-import { createContext, useCallback, useEffect, useState } from 'react'
+import { createContext, useCallback, useEffect, useRef, useState } from 'react'
 import { signInWithEmailAndPassword, signOut, Persistence, UserCredential } from 'firebase/auth'
 import { useRouter } from 'next/router'
 import { useSafeState, useUpdate } from 'react-hooks'
@@ -31,6 +31,7 @@ export const AuthProvider = ({ children }: AuthProviderP) => {
     const router = useRouter()
     const [user, setUser] = useSafeState<User | null>(null)
     const [loading, setLoading] = useSafeState(!user)
+    const _fetched = useRef(false)
 
     const login = useCallback(async (email: string, password: string) => {
         return await signInWithEmailAndPassword(FirebaseApp.auth, email, password)
@@ -45,23 +46,20 @@ export const AuthProvider = ({ children }: AuthProviderP) => {
     }, [])
 
     const fetchUser = async (id: string) => {
-        setLoading(true)
         try {
-            if (id) {
-                const user = await UserApp.getDoc(UserApp.doc(id))
-                const setUpLink = '/set-up-account'
-                setUser(user)
-                if (!user?.initialized && router.asPath !== setUpLink) {
-                    router.push({
-                        pathname: setUpLink,
-                    })
-                } else {
-                    setLoading(false)
-                }
+            const user = await UserApp.getDoc(UserApp.doc(id))
+            const setUpLink = '/set-up-account'
+            if (!user?.initialized && router.asPath !== setUpLink) {
+                router.push({
+                    pathname: setUpLink,
+                })
             } else {
-                throw new Error()
+                _fetched.current = true
+                setUser(user)
+                setLoading(false)
             }
         } catch (err) {
+            _fetched.current = true
             setUser(null)
             setLoading(false)
         }
@@ -82,27 +80,26 @@ export const AuthProvider = ({ children }: AuthProviderP) => {
         // listen for token changes
         // call setUser and write new token as a cookie
         const unsubscribe = FirebaseApp.auth?.onIdTokenChanged?.(async (arg) => {
+            setUid(arg?.uid)
             try {
                 getIdToken(arg ? undefined : '')
             } catch (e) {
                 console.error(e)
             }
-            if (!user && arg) {
-                await fetchUser(arg.uid)
-            } else {
-                setLoading(false)
+            if (!_fetched.current) {
+                if (arg?.uid) {
+                    setLoading(true)
+                    await fetchUser(arg?.uid)
+                } else {
+                    setLoading(false)
+                }
             }
-            setUid(arg?.uid)
         })
 
         return () => {
             unsubscribe()
         }
-    }, [uid])
-
-    useUpdate(() => {
-        if (user && loading) setLoading(false)
-    }, [router.asPath])
+    }, [])
 
     return (
         <AuthContext.Provider

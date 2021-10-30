@@ -1,5 +1,5 @@
-import FirebaseAdmin from 'FirebaseAdmin'
 import { System } from 'models/System'
+import FirebaseAdmin from 'FirebaseAdmin'
 
 // FIREBASE ADMIN FUNCTIONS
 export abstract class SystemAdmin<D extends System = Record<string, unknown>> {
@@ -87,5 +87,13 @@ export abstract class SystemAdmin<D extends System = Record<string, unknown>> {
     async create(colRef: FirebaseFirestore.CollectionReference<D>, data: D, id?: string) {
         if (!id) return await colRef.add({ ...data, created_at: new Date() })
         return await colRef.doc(id).set({ ...data, created_at: new Date() })
+    }
+
+    async update(
+        docRef: FirebaseFirestore.DocumentReference<D>,
+        data: FirebaseFirestore.UpdateData,
+        precondition?: FirebaseFirestore.Precondition
+    ) {
+        return await docRef.update({ ...data, updated_at: new Date() }, precondition)
     }
 }

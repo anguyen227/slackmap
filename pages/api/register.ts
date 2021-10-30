@@ -126,13 +126,15 @@ const handleRegistration = async (req: NextApiRequest) => {
                     } else {
                         // add member document
                         const userRecord = await UserAdmin.getBy(UserAdmin.col().where('email', '==', email), 1)
-                        if (userRecord?.[0]._id) {
-                            await UserAdmin.doc(userRecord?.[0]._id).update({
+                        const { _id, lat, lng } = userRecord?.[0] || {}
+                        if (_id) {
+                            await UserAdmin.update(UserAdmin.doc(_id), {
                                 teams: UserAdmin.addToArray({
                                     team_id,
                                     user_id,
                                 }),
                             })
+
                             // add member document
                             await MemberAdmin.create(
                                 MemberAdmin.col(team_id),
@@ -141,6 +143,8 @@ const handleRegistration = async (req: NextApiRequest) => {
                                     display_name: display_name,
                                     uid: userRecord?.[0]._id,
                                     is_admin,
+                                    lat: lat ?? null,
+                                    lng: lng ?? null,
                                 },
                                 user_id
                             )

@@ -1,31 +1,15 @@
-import {
-    Avatar,
-    ClickAwayListener,
-    Grow,
-    ListItemAvatar,
-    ListItemText,
-    MenuItem,
-    MenuList,
-    Paper,
-    Popper,
-} from '@mui/material'
-import { css } from '@emotion/css'
 import { Marker, MapContext, MarkerProps } from 'react-map-gl'
-import React, { forwardRef, memo, useContext, useMemo, useRef, useState } from 'react'
+import React, { memo, useContext, useMemo } from 'react'
+import { Member } from 'models/Member'
 
-interface Point {
-    longitude: number
-    latitude: number
-    image?: string
-}
-type PinProps<D extends Point = any> = MarkerProps & {
+type PinProps<D = Member> = Partial<MarkerProps> & {
     data: D
     height?: number
     color?: string
     noScale?: boolean
     onClick?(data: D): void
 }
-const Pin = ({ data, height = 30, color = '#d00', onClick, noScale, ...markerProps }: PinProps<Point>) => {
+const Pin = ({ data, height = 30, color = '#d00', onClick, noScale, ...markerProps }: PinProps) => {
     // handle dropdown
     // const [open, setOpen] = useState(false)
     // const anchorRef = useRef<SVGSVGElement>(null)
@@ -66,8 +50,8 @@ const Pin = ({ data, height = 30, color = '#d00', onClick, noScale, ...markerPro
             {...markerProps}
             offsetTop={-offsetTop}
             offsetLeft={-offsetLeft}
-            longitude={data.longitude}
-            latitude={data.latitude}>
+            longitude={data.lng as number}
+            latitude={data.lat as number}>
             {/* <svg
                 xmlns='http://www.w3.org/2000/svg'
                 height={height}
@@ -122,7 +106,7 @@ const Pin = ({ data, height = 30, color = '#d00', onClick, noScale, ...markerPro
                         />
                     </g>
                     <image
-                        xlinkHref={data.image}
+                        xlinkHref={data.avatar_url}
                         preserveAspectRatio='xMidYMid slice'
                         x='0'
                         y='0'

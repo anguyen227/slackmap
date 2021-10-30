@@ -1,5 +1,6 @@
 export enum ErrorCode {
     DataExisted = 'data/existed',
+    DataNotFound = 'data/not-found',
     InvalidEmail = 'invalid/email',
     InvalidUserData = 'invalid/user-data',
     FirebaseAdminInitFail = 'firebase-admin/init-failed',

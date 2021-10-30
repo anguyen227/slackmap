@@ -8,6 +8,7 @@ import ClientError from 'models/ClientError'
 
 import { ErrorCode } from 'enum/ErrorCode'
 import { UserAdmin } from 'DTO/Admin/User'
+import { MemberAdmin } from 'DTO/Admin/Member'
 
 const setUpMember: NextApiHandler = async (req, res) => {
     try {
@@ -25,6 +26,15 @@ const setUpMember: NextApiHandler = async (req, res) => {
                 { merge: true }
             )
             const record = await UserAdmin.get(userRef)
+            if (record?.default_team) {
+                await MemberAdmin.doc(...record?.default_team).set(
+                    {
+                        lat: latitude,
+                        lng: longitude,
+                    },
+                    { merge: true }
+                )
+            }
             res.status(200).json(record)
         } else {
             throw new ClientError(400, ErrorCode.InvalidLocation, 'Location value is invalid')
