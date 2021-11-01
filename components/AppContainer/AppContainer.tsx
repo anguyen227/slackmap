@@ -12,7 +12,10 @@ const AppContainer = ({ children, ...customMeta }: AppContainerProps) => {
         <>
             <Head>
                 <title>{meta.title}</title>
-                <link rel='canonical' href={`${process.env.NEXT_PUBLIC_BASE_URL}${router?.asPath}`} />
+                <link
+                    rel='canonical'
+                    href={`${process.env.NEXT_PUBLIC_BASE_URL || window.location.origin}${router?.asPath}`}
+                />
                 <meta content={meta.description} name='description' />
             </Head>
             {children}

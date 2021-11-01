@@ -5,7 +5,7 @@ import Cookie from 'enum/Cookie'
 
 function initAxios() {
     const instance = axios.create({
-        baseURL: process.env.NEXT_PUBLIC_BASE_URL + '/api',
+        baseURL: `${process.env.NEXT_PUBLIC_BASE_URL || window.location.origin}` + '/api',
         xsrfCookieName: 'CSRF-TOKEN',
         xsrfHeaderName: 'X-CSRF-TOKEN',
         timeout: 1000,
