@@ -23,8 +23,8 @@ const register: NextApiHandler = async (req, res) => {
             if (user) {
                 res.status(200).send("You've already been added")
             } else {
-                handleRegistration(req)
                 res.status(200).send("Hanging tight!!! I'm setting up account for you....")
+                handleRegistration(req)
             }
         } else {
             throw new ClientError(400, ErrorCode.InvalidUserData)
@@ -58,6 +58,7 @@ const handleRegistration = async (req: NextApiRequest) => {
             },
         })
 
+        console.log('slackResult', slackResult)
         const { profile, is_admin } = slackResult.data.user || {}
         const { email, image_1024, display_name } = profile || {}
 
