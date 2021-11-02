@@ -1,13 +1,14 @@
+import axios from 'axios'
 import type { NextApiHandler, NextApiRequest } from 'next'
 
 import { apiHandler } from 'services/apiHandler'
 import { verifyAdmin } from 'services/verifyAdmin'
 
 import ClientError from 'models/ClientError'
-import FirebaseAdmin from 'FirebaseAdmin'
 
 import { ErrorCode } from 'enum/ErrorCode'
 import { verifySlack } from 'services/verifySlack'
+import cloudAPI from 'services/cloudAPI'
 
 import { UserAdmin } from 'DTO/Admin/User'
 import { TeamAdmin } from 'DTO/Admin/Team'
@@ -22,8 +23,8 @@ const register: NextApiHandler = async (req, res) => {
             if (user) {
                 res.status(200).send("You've already been added")
             } else {
-                res.status(200).send("Hanging tight!!! I'm setting up account for you....")
                 handleRegistration(req)
+                res.status(200).send("Hanging tight!!! I'm setting up account for you....")
             }
         } else {
             throw new ClientError(400, ErrorCode.InvalidUserData)
@@ -50,13 +51,14 @@ const handleRegistration = async (req: NextApiRequest) => {
                 team_id
             )
         }
-
         // get user slack profile
-        const slackResult = await FirebaseAdmin.bolt.client.users.info({
-            user: user_id,
+        const slackResult = await cloudAPI().get<any>('/slack/user/get', {
+            data: {
+                user_id,
+            },
         })
 
-        const { profile, is_admin } = slackResult.user || {}
+        const { profile, is_admin } = slackResult.data.user || {}
         const { email, image_1024, display_name } = profile || {}
 
         // validate email to create account
@@ -94,24 +96,26 @@ const handleRegistration = async (req: NextApiRequest) => {
                     user_id
                 )
 
-                FirebaseAdmin.bolt.client.chat.postMessage({
-                    channel: channel_id,
-                    blocks: [
-                        {
-                            type: 'section',
-                            text: {
-                                type: 'mrkdwn',
-                                text: `Your Slack Map account is all set:\nCredential: *[YOUR SLACK EMAIL]/${password}*`,
+                await cloudAPI().post('/slack/message/send', {
+                    data: {
+                        channel: channel_id,
+                        blocks: [
+                            {
+                                type: 'section',
+                                text: {
+                                    type: 'mrkdwn',
+                                    text: `Your Slack Map account is all set:\nCredential: *[YOUR SLACK EMAIL]/${password}*`,
+                                },
                             },
-                        },
-                    ],
+                        ],
+                    },
                 })
             } catch (e) {
                 const err = e as ClientError
                 if (err.code === 'auth/email-already-exists') {
                     const memberRecord = await MemberAdmin.get(MemberAdmin.doc(team_id, user_id))
                     if (memberRecord) {
-                        FirebaseAdmin.bolt.client.chat.postMessage({
+                        await cloudAPI().post('/slack/message/send', {
                             channel: channel_id,
                             blocks: [
                                 {
@@ -148,7 +152,7 @@ const handleRegistration = async (req: NextApiRequest) => {
                                 },
                                 user_id
                             )
-                            FirebaseAdmin.bolt.client.chat.postMessage({
+                            await cloudAPI().post('/slack/message/send', {
                                 channel: channel_id,
                                 blocks: [
                                     {
@@ -161,7 +165,7 @@ const handleRegistration = async (req: NextApiRequest) => {
                                 ],
                             })
                         } else {
-                            FirebaseAdmin.bolt.client.chat.postMessage({
+                            await cloudAPI().post('/slack/message/send', {
                                 channel: channel_id,
                                 blocks: [
                                     {
@@ -186,7 +190,7 @@ const handleRegistration = async (req: NextApiRequest) => {
         }
     } catch (e) {
         if (e instanceof ClientError) {
-            FirebaseAdmin.bolt.client.chat.postMessage({
+            await cloudAPI().post('/slack/message/send', {
                 channel: channel_id,
                 text: e.message,
             })
