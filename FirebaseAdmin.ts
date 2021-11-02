@@ -13,13 +13,13 @@ class FirebaseAdmin {
 
     static async init(): Promise<void> {
         return await new Promise((resolve, reject) => {
-            this.bolt = new App({
-                token: process.env.SLACK_BOT_TOKEN,
-                signingSecret: process.env.SLACK_SIGNING_SECRET,
-            })
-
             try {
+                this.bolt = new App({
+                    token: process.env.SLACK_BOT_TOKEN,
+                    signingSecret: process.env.SLACK_SIGNING_SECRET,
+                })
                 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY as string)
+                console.log('serviceAccount', serviceAccount)
                 if (!admin.apps.length) {
                     admin.initializeApp({
                         credential: admin.credential.cert(serviceAccount),
