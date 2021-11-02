@@ -13,6 +13,7 @@ import cloudAPI from 'services/cloudAPI'
 import { UserAdmin } from 'DTO/Admin/User'
 import { TeamAdmin } from 'DTO/Admin/Team'
 import { MemberAdmin } from 'DTO/Admin/Member'
+import parseError from 'utils/parseError'
 
 const register: NextApiHandler = async (req, res) => {
     try {
@@ -191,6 +192,7 @@ const handleRegistration = async (req: NextApiRequest) => {
             )
         }
     } catch (e) {
+        console.log('Register error', parseError(e))
         if (e instanceof ClientError) {
             await cloudAPI().post('/slack/message/send', {
                 channel: channel_id,
