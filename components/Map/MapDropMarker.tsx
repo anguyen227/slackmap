@@ -45,7 +45,7 @@ const MapDropMarker = ({ onComplete }: MapDropMarkerProps) => {
     const [pin, setPin] = useState<any>(null)
     const url =
         pin && reverseGeocode
-            ? `https://api.mapbox.com/geocoding/v5/mapbox.places/${pin?.data?.longitude},${pin?.data?.latitude}.json?access_token=${process.env.NEXT_PUBLIC_MAPBOX_KEY}&limit=1`
+            ? `https://api.mapbox.com/geocoding/v5/mapbox.places/${pin?.data?.lng},${pin?.data?.lat}.json?access_token=${process.env.NEXT_PUBLIC_MAPBOX_KEY}&limit=1`
             : null
 
     const {} = useSwr(url, fetcher, {
