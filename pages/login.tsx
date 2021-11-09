@@ -56,6 +56,7 @@ const LoginPage = () => {
                             await login?.(values.email, values.password)
                         } catch (e) {
                             const error = parseError(e)
+                            console.error('login error', error)
                             if (error.code === 'auth/wrong-password') {
                                 helpers.setErrors({
                                     password: 'Password is incorrect',

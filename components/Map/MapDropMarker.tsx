@@ -58,8 +58,8 @@ const MapDropMarker = ({ onComplete }: MapDropMarkerProps) => {
     const onMarkerDragEnd = useCallback((event) => {
         setPin({
             data: {
-                longitude: event.lngLat[0],
-                latitude: event.lngLat[1],
+                lng: event.lngLat[0],
+                lat: event.lngLat[1],
             },
         })
         setReverseGeo(true)
@@ -75,8 +75,8 @@ const MapDropMarker = ({ onComplete }: MapDropMarkerProps) => {
     const handleTransitionEnd = (latitude: number, longitude: number) => () => {
         setPin({
             data: {
-                latitude,
-                longitude,
+                lat: latitude,
+                lng: longitude,
             },
         })
         handleViewPortChange({ onTransitionEnd: undefined })
@@ -140,7 +140,7 @@ const MapDropMarker = ({ onComplete }: MapDropMarkerProps) => {
                                     })
                                 }}
                             />
-                            {pin && <Pin {...pin} noScale draggable onDragEnd={onMarkerDragEnd} />}
+                            {pin?.data && <Pin {...pin} noScale draggable onDragEnd={onMarkerDragEnd} />}
                             <LocationPanel loading={reverseGeocode} place={place} onSetLocation={handleSetLocation} />
                         </Map>
                     </div>

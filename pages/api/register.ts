@@ -1,18 +1,20 @@
-import axios from 'axios'
 import type { NextApiHandler, NextApiRequest } from 'next'
+
+import FirebaseAdmin from 'FirebaseAdmin'
 
 import { apiHandler } from 'services/apiHandler'
 import { verifyAdmin } from 'services/verifyAdmin'
+import { verifySlack } from 'services/verifySlack'
 
 import ClientError from 'models/ClientError'
 
 import { ErrorCode } from 'enum/ErrorCode'
-import { verifySlack } from 'services/verifySlack'
-import cloudAPI from 'services/cloudAPI'
 
 import { UserAdmin } from 'DTO/Admin/User'
 import { TeamAdmin } from 'DTO/Admin/Team'
 import { MemberAdmin } from 'DTO/Admin/Member'
+
+import { slackMessage } from 'utils/slackMessage'
 import parseError from 'utils/parseError'
 
 const register: NextApiHandler = async (req, res) => {
@@ -24,9 +26,8 @@ const register: NextApiHandler = async (req, res) => {
             if (user) {
                 res.status(200).send("You've already been added")
             } else {
-                // res.status(200).send("Hanging tight!!! I'm setting up account for you....")
-                await handleRegistration(req)
                 res.status(200).send("Hanging tight!!! I'm setting up account for you....")
+                await handleRegistration(req)
             }
         } else {
             throw new ClientError(400, ErrorCode.InvalidUserData)
@@ -54,14 +55,11 @@ const handleRegistration = async (req: NextApiRequest) => {
             )
         }
         // get user slack profile
-        const slackResult = await cloudAPI().get<any>('/slack/user/get', {
-            data: {
-                user_id,
-            },
+        const slackUserRecord = await FirebaseAdmin.bolt.client.users.info({
+            user: user_id,
         })
 
-        console.log('slackResult', slackResult)
-        const { profile, is_admin } = slackResult.data.user || {}
+        const { profile, is_admin } = slackUserRecord.user || {}
         const { email, image_1024, display_name } = profile || {}
 
         // validate email to create account
@@ -98,27 +96,24 @@ const handleRegistration = async (req: NextApiRequest) => {
                     },
                     user_id
                 )
-
-                await cloudAPI().post('/slack/message/send', {
-                    data: {
-                        channel: channel_id,
-                        blocks: [
-                            {
-                                type: 'section',
-                                text: {
-                                    type: 'mrkdwn',
-                                    text: `Your Slack Map account is all set:\nCredential: *[YOUR SLACK EMAIL]/${password}*`,
-                                },
+                await slackMessage({
+                    channel: channel_id,
+                    blocks: [
+                        {
+                            type: 'section',
+                            text: {
+                                type: 'mrkdwn',
+                                text: `Your Slack Map account is all set:\nCredential: *[YOUR SLACK EMAIL]/${password}*`,
                             },
-                        ],
-                    },
+                        },
+                    ],
                 })
             } catch (e) {
                 const err = e as ClientError
                 if (err.code === 'auth/email-already-exists') {
                     const memberRecord = await MemberAdmin.get(MemberAdmin.doc(team_id, user_id))
                     if (memberRecord) {
-                        await cloudAPI().post('/slack/message/send', {
+                        await slackMessage({
                             channel: channel_id,
                             blocks: [
                                 {
@@ -155,7 +150,7 @@ const handleRegistration = async (req: NextApiRequest) => {
                                 },
                                 user_id
                             )
-                            await cloudAPI().post('/slack/message/send', {
+                            await slackMessage({
                                 channel: channel_id,
                                 blocks: [
                                     {
@@ -168,7 +163,7 @@ const handleRegistration = async (req: NextApiRequest) => {
                                 ],
                             })
                         } else {
-                            await cloudAPI().post('/slack/message/send', {
+                            await slackMessage({
                                 channel: channel_id,
                                 blocks: [
                                     {
@@ -194,7 +189,7 @@ const handleRegistration = async (req: NextApiRequest) => {
     } catch (e) {
         console.log('Register error', parseError(e))
         if (e instanceof ClientError) {
-            await cloudAPI().post('/slack/message/send', {
+            await slackMessage({
                 channel: channel_id,
                 text: e.message,
             })

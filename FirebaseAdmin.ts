@@ -1,4 +1,5 @@
 import admin from 'firebase-admin'
+import { App } from '@slack/bolt'
 
 import { ErrorCode } from 'enum/ErrorCode'
 import ClientError from 'models/ClientError'
@@ -8,10 +9,15 @@ class FirebaseAdmin {
     static db: admin.firestore.Firestore
     static auth: admin.auth.Auth
     static initialized: boolean = false
+    static bolt: App
 
     static async init(): Promise<void> {
         return await new Promise((resolve, reject) => {
             try {
+                this.bolt = new App({
+                    token: process.env.SLACK_BOT_TOKEN,
+                    signingSecret: process.env.SLACK_SIGNING_SECRET,
+                })
                 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY as string)
                 if (!admin.apps.length) {
                     admin.initializeApp({

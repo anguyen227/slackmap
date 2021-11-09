@@ -12,16 +12,16 @@ import { MemberAdmin } from 'DTO/Admin/Member'
 
 const setUpMember: NextApiHandler = async (req, res) => {
     try {
-        const { latitude, longitude } = req.body
+        const { lat, lng } = req.body
         const user = await validateUser(req, res)
         const userRef = UserAdmin.doc(user.uid)
 
-        if (typeof latitude === 'number' && typeof latitude === 'number') {
+        if (typeof lat === 'number' && typeof lng === 'number') {
             await userRef.set(
                 {
                     initialized: true,
-                    lat: latitude,
-                    lng: longitude,
+                    lat: lat,
+                    lng: lng,
                 },
                 { merge: true }
             )
@@ -29,8 +29,8 @@ const setUpMember: NextApiHandler = async (req, res) => {
             if (record?.default_team) {
                 await MemberAdmin.doc(...record?.default_team).set(
                     {
-                        lat: latitude,
-                        lng: longitude,
+                        lat: lat,
+                        lng: lng,
                     },
                     { merge: true }
                 )
